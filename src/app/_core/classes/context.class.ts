@@ -5,7 +5,7 @@ export class ContextClass {
     effects: any[]
   }[] = [];
 
-  mockInit(): void {
+  mockInit(): ContextClass {
     this.creatures.push({
       id: 1,
       name: 'Porko Rosso',
@@ -21,5 +21,6 @@ export class ContextClass {
       }]
     });
 
+    return this;
   }
 }
