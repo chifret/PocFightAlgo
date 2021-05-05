@@ -1,22 +1,26 @@
-import {EventFightClass} from '../classes/fight/event-fight.class';
-import {Injectable} from '@angular/core';
+import {Injectable, Injector} from '@angular/core';
 import {ObjectUtils} from '../utils/object.utils';
 import {LogService} from '../service/log.service';
-import {HasmoveEventsFightInterface} from '../interfaces/fight/events/hasmove-events-fight.interface';
-import {HasdashEventsFightInterface} from '../interfaces/fight/events/hasdash-events-fight.interface';
+import {HasmoveActionsFightInterface} from '../interfaces/fight/actions/hasmove-actions-fight.interface';
+import {ContextService} from '../service/context.service';
+import {MoveClass} from '../classes/move.class';
+import {ActionClass} from '../classes/action.class';
 
 @Injectable()
 export class FightHelper {
 
-  constructor(private logService: LogService) {
+  // @ts-ignore
+  injector: Injector;
+
+  constructor(private logService: LogService,
+              private contextService: ContextService) {
   }
 
-  resolveEvent(input: any): void {
-    this.logService.log(input.attacker + ' annonce un ' + input.type + ' sur ' + input.target);
-    const event = ObjectUtils.getEventInstance(input.type);
+  resolveAction(input: ActionClass): void {
+    this.logService.log(input.attacker.name + ' annonce un ' + input.type + ' sur ' + input.target.name);
+    const event = ObjectUtils.getEventInstance(input.type, this.injector);
 
-    // @ts-ignore
-    if ((event as HasmoveEventsFightInterface).performMove) {
+    if ((event as any).performMove) {
       this.resolveMove({
         mover: input.attacker,
         type: 'move',
@@ -25,32 +29,30 @@ export class FightHelper {
       });
     }
 
-    // @ts-ignore
-    if ((event as HasdashEventsFightInterface).performDash) {
-      this.logService.log('It is a HasdashEventsFightInterface');
+    this.contextService.getContextEffects().forEach(effect => {
+      const statusType = ObjectUtils.getBuffInstance(effect.effect.type, this.injector);
+      if ((statusType as any).beforeaction) {
+        (statusType as any).beforeaction(effect, input);
+      }
+    });
+
+    if ((event as any).performAttack) {
+      this.logService.log('PAF');
     }
   }
 
-
-  resolveMove(input: any): void {
+  resolveMove(input: MoveClass): void {
     if (input.type === 'move') {
+      this.contextService.getContextEffects().forEach(effect => {
+        const statusType = ObjectUtils.getBuffInstance(effect.effect.type, this.injector);
+        if ((statusType as any).beforemove) {
+          (statusType as any).beforemove(effect, input);
+        }
+      });
 
-      this.logService.log('Check si AO');
-
-      if (input.targetType === 'character') {
-        this.logService.log(input.mover + ' move vers ' + input.target);
-      } else {
-        this.logService.log(input.mover + ' move en ' + input.target);
-      }
-    } else if (input.type === 'move') {
-      if (input.targetType === 'character') {
-        this.logService.log(input.mover + ' dash vers ' + input.target);
-      } else {
-        this.logService.log(input.mover + ' dash en ' + input.target);
-      }
+      this.logService.log(input.mover.name + ' move vers ' + (input.targetType === 'character' ? input.target.name : 'ailleurs'));
+    } else {
+      this.logService.log(input.mover.name + ' dash vers ' + (input.targetType === 'character' ? input.target.name : 'ailleurs'));
     }
-  }
-
-  resolveBuff(input: any): void {
   }
 }

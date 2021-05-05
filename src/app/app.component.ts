@@ -1,9 +1,9 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Injector, OnDestroy, OnInit} from '@angular/core';
 import {ContextClass} from './_core/classes/context.class';
 import {LogService} from './_core/service/log.service';
 import {Subscription} from 'rxjs';
 import {FightHelper} from './_core/helpers/fight.helper';
-import {ChargeEventFightClass} from './_core/classes/fight/events/charge-event-fight.class';
+import {ChargeActionsFightClass} from './_core/classes/fight/actions/charge-actions-fight.class';
 import {ContextService} from './_core/service/context.service';
 
 @Component({
@@ -18,19 +18,18 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(private logService: LogService,
               private contextService: ContextService,
-              private fightHelper: FightHelper) {
+              private fightHelper: FightHelper,
+              private injector: Injector) {
+    fightHelper.injector = injector;
   }
 
   ngOnInit(): void {
     this.logServiceSubscription = this.logService.output.subscribe(log => {
       this.logs.push(log);
     });
-    // this.context.mockInit();
     this.contextService.context = new ContextClass().mockInit();
 
-    setTimeout(() => {
-      this.mockFight();
-    }, 1000);
+    this.mockFight();
   }
 
   ngOnDestroy(): void {
@@ -38,10 +37,13 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   mockFight(): void {
-    this.fightHelper.resolveEvent({
-      attacker: 'El Porko Rosso',
-      target: 'Pistol Chimp\'',
-      type: 'ChargeEventFightClass'
+    this.fightHelper.resolveAction({
+      // @ts-ignore
+      attacker: this.contextService.context.creatures.find(item => item.id === 1),
+      // @ts-ignore
+      target: this.contextService.context.creatures.find(item => item.id === 2),
+      type: 'ChargeActionsFightClass'
     });
+    this.logService.log('(Enfin, l\'autre a dash, donc l\'attaque de la charge c\'est mort, mais j\'ai pas testé les posals !)');
   }
 }
