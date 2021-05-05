@@ -3,9 +3,10 @@ import {BeforemoveBuffFightInterface} from '../../../interfaces/fight/buffs/befo
 import {CreatureClass} from '../../creature.class';
 import {MoveClass} from '../../move.class';
 import {BuffApiClass} from '../../api/buff-api.class';
-import {LogService} from '../../../service/log.service';
 
 export class OpportunityattackBuffFightClass extends BuffFightClass implements BeforemoveBuffFightInterface {
+
+  beforeMove = true;
 
   beforemove(effect: { effect: BuffApiClass, creature: CreatureClass }, move: MoveClass): void {
 

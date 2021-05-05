@@ -1,7 +1,11 @@
 import {Injector} from '@angular/core';
 import {FightHelper} from '../../helpers/fight.helper';
 
-export class ActionFightClass {
+export abstract class ActionFightClass {
+
+  isAttack = false;
+  hasMoveBeforeAttack = false;
+  hasBuffForAttack = false;
 
   fightHelper: FightHelper;
 

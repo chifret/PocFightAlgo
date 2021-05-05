@@ -1,33 +1,15 @@
 import {Injectable} from '@angular/core';
 import {ContextClass} from '../classes/context.class';
+import {CreatureClass} from '../classes/creature.class';
+import {BuffApiClass} from '../classes/api/buff-api.class';
 
 @Injectable()
 export class ContextService {
   // @ts-ignore
   context: ContextClass = null;
 
-  getContextEffects(): {
-    creature: {
-      id: number,
-      name: string,
-      effects: { date: Date, type: string }[],
-      status: { date: Date, type: string }[]
-    }, effect: {
-      date: Date,
-      type: string
-    }
-  }[] {
-    const effects: {
-      creature: {
-        id: number,
-        name: string,
-        effects: { date: Date, type: string }[],
-        status: { date: Date, type: string }[]
-      }, effect: {
-        date: Date,
-        type: string
-      }
-    }[] = [];
+  getContextEffects(): { creature: CreatureClass, effect: BuffApiClass }[] {
+    const effects: { creature: CreatureClass, effect: BuffApiClass }[] = [];
     this.context.creatures
       .filter(item => item.effects && item.effects.length)
       .forEach(creature => {

@@ -1,7 +1,6 @@
 import {Injectable, Injector} from '@angular/core';
 import {ObjectUtils} from '../utils/object.utils';
 import {LogService} from '../service/log.service';
-import {HasmoveActionsFightInterface} from '../interfaces/fight/actions/hasmove-actions-fight.interface';
 import {ContextService} from '../service/context.service';
 import {MoveClass} from '../classes/move.class';
 import {ActionClass} from '../classes/action.class';
@@ -20,7 +19,13 @@ export class FightHelper {
     this.logService.log(input.attacker.name + ' annonce un ' + input.type + ' sur ' + input.target.name);
     const event = ObjectUtils.getEventInstance(input.type, this.injector);
 
-    if ((event as any).performMove) {
+    // if ((event as any).performMove) {
+    if (event.hasBuffForAttack) {
+      this.logService.log(input.attacker.name + ' se buff !');
+    }
+
+    // if ((event as any).performMove) {
+    if (event.hasMoveBeforeAttack) {
       this.resolveMove({
         mover: input.attacker,
         type: 'move',
@@ -31,13 +36,20 @@ export class FightHelper {
 
     this.contextService.getContextEffects().forEach(effect => {
       const statusType = ObjectUtils.getBuffInstance(effect.effect.type, this.injector);
-      if ((statusType as any).beforeaction) {
+      // if ((statusType as any).beforeaction) {
+      if (statusType.beforeAttack) {
         (statusType as any).beforeaction(effect, input);
       }
     });
 
-    if ((event as any).performAttack) {
+    // if ((event as any).performAttack) {
+    if (event.isAttack) {
       this.logService.log('PAF');
+    }
+
+    // if ((event as any).performMove) {
+    if (event.hasBuffForAttack) {
+      this.logService.log('Ah ben le buff de ' + input.attacker.name + ' est terminé...');
     }
   }
 
@@ -45,7 +57,8 @@ export class FightHelper {
     if (input.type === 'move') {
       this.contextService.getContextEffects().forEach(effect => {
         const statusType = ObjectUtils.getBuffInstance(effect.effect.type, this.injector);
-        if ((statusType as any).beforemove) {
+        // if ((statusType as any).beforemove) {
+        if (statusType.beforeMove) {
           (statusType as any).beforemove(effect, input);
         }
       });

@@ -1,7 +1,9 @@
 import {ActionFightClass} from '../action-fight.class';
-import {IsattackFightInterface} from '../../../interfaces/fight/actions/isattack-actions-fight.interface';
+import {HasattackFightInterface} from '../../../interfaces/fight/actions/hasattack-actions-fight.interface';
 
-export class QuickshotActionsFightClass extends ActionFightClass implements IsattackFightInterface {
+export class QuickshotActionsFightClass extends ActionFightClass implements HasattackFightInterface {
+
+  isAttack = true;
 
   performAttack(): void {
   }

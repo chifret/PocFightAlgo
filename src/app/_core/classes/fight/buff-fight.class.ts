@@ -4,6 +4,10 @@ import {LogService} from '../../service/log.service';
 
 export abstract class BuffFightClass {
 
+  isBuff = false;
+  beforeAttack = false;
+  beforeMove = false;
+
   fightHelper: FightHelper;
   logService: LogService;
 

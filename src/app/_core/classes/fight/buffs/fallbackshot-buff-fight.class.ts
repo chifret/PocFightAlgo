@@ -5,6 +5,8 @@ import {BuffApiClass} from '../../api/buff-api.class';
 
 export class FallbackshotBuffFightClass extends BuffFightClass implements BeforeactionBuffFightInterface {
 
+  beforeAttack = true;
+
   beforeaction(effect: { effect: BuffApiClass, creature: CreatureClass }, action: any): void {
 
     if (effect.creature.squadId === action.attacker.squadId) {
